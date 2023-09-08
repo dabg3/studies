@@ -57,7 +57,7 @@ Final states stem:[F = \{q3\}]
 |===
 
 .State diagram
-image::fsm.png[State Diagram]
+image::assets/fsm.png[State Diagram]
 
 === Formal Computation
 
@@ -134,7 +134,7 @@ describes the language of all strings over that alphabet.
 
 * stem:[a] for some stem:[a] in the alphabet stem:[\Sigma]
 * stem:[\epsilon]
-* stem:[\emptyset]
+* stem:[\emptyset] (language with no strings)
 * (stem:[R_1 \cup R_2]), where stem:[R_1] and stem:[R_2] are regular expressions
 * (stem:[R_1 \circ R_2]), where stem:[R_1] and stem:[R_2] are regular expressions
 * (stem:[R_1^*]), where stem:[R_1] is a regular expression
@@ -147,16 +147,24 @@ describes the language of all strings over that alphabet.
 
 ==== Generalized Nondeterministic Finite Automaton
 
-A _generalized nondeterministic finite automaton (**GDFA**)_ is an NFA wherein the transition arrows
+
+
+A _generalized nondeterministic finite automaton (**GDFA**)_ is a **5-tuple** 
+(stem:[Q, \Sigma, \delta, q_{start}, q_{accept}]), where:
+
+. stem:[Q] is the finite set of **states**
+. stem:[\Sigma] is the **alphabet**, a finite set of allowed input symbols
+. stem:[\delta: (Q - \{q_{accept}\}) \times (Q - \{q_{start}\}) \rightarrow R] is the **transition function** 
+. stem:[q_{start} \in Q] is the **start state**
+. stem:[q_{accept} \in Q] is the **accept state**
+
+A GDFA is an NFA wherein the transition arrows
 may have regular expressions as labels, instead of only members of the alphabet or stem:[\epsilon]. +
 The GFNA [.underline]#reads blocks of symbols# from the input.
 
-.Construction convention
+.Ripping states
+image::assets/gnfa.png[Ripping states]
 
-* start state has arrows going to any other state but no arrows coming in
-* only 1 accept state, it has arrows coming in from any other state but not going out
-* any state has arrows coming in from any other state and itself, as well as arrows going out
-to any other state (only for non-start, non-accepting states).
 
-...TODO
+
 
