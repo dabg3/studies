@@ -1,6 +1,8 @@
 = Language Theory
 :stem: latexmath
 
+A _formal language_ consists of words whose letters are taken from an alphabet and are well-formed according to a specific set of rules. 
+
 == Regular Languages
 
 A language is called a **regular language** if some finite automaton recognizes it or it is
@@ -147,8 +149,6 @@ describes the language of all strings over that alphabet.
 
 ==== Generalized Nondeterministic Finite Automaton
 
-
-
 A _generalized nondeterministic finite automaton (**GDFA**)_ is a **5-tuple** 
 (stem:[Q, \Sigma, \delta, q_{start}, q_{accept}]), where:
 
@@ -164,6 +164,73 @@ The GFNA [.underline]#reads blocks of symbols# from the input.
 
 .Ripping states
 image::assets/gnfa.png[Ripping states]
+
+=== Pumping Lemma
+
+Let latexmath:[A] be a regular language. +
+Let latexmath:[p] be a number (pumping lenght).
+
+If latexmath:[s] is any string in latexmath:[A], where latexmath:[|s| \geq p], then
+latexmath:[s] may be divided into three pieces latexmath:[s = xyz] satisfying the conditions:
+
+* latexmath:[xy^iz \in A], for each latexmath:[i \geq 0] 
+* latexmath:[|y|\geq 0]
+* latexmath:[|xy|\leq p]
+
+.Note 
+
+* If a language is proved to not respect the pumping lemma, then it is not regular
+* latexmath:[|s|] represents the length of string latexmath:[s]
+
+...TODO 
+
+== Context-Free Languages
+
+...TODO
+
+== Deterministic Context-Free Languages
+
+Languages belonging to this set (DCFLs) are recognizable by _deterministic pushdown automata_ (DPDAs). +
+[.underline]#DPDAs *are not equivalent* to their nondeterministic counterpart (PDAs)#, a stack makes the
+number of states unbounded.
+
+A _deterministic pushdown automaton (DPDA)_ is a 6-tuple 
+(stem:[Q, \Sigma, \Gamma, \delta,  q_{0}, F]), where:
+
+. stem:[Q] is the finite set of **states**
+. stem:[\Sigma] is the **alphabet**
+. stem:[\Gamma] is the **stack alphabet**, which may differ from stem:[\Sigma]
+. stem:[\delta: Q \times \Sigma_{\epsilon} \times \Gamma_{\epsilon} \rightarrow 
+(Q \times \Gamma_{\epsilon}) \cup \{\emptyset\}] is the **transition function**,
+the following condition must be valid:
+    * For every stem:[q \in Q, a \in \Sigma \text{ and } x \in \Gamma], one of stem:[\delta(q, a, x),
+    \delta(q, a, \epsilon), \delta(q, \epsilon, x) \text{ and } \delta(q, \epsilon, \epsilon)] 
+    must not be stem:[\emptyset]
+. stem:[q_{0} \in Q] is the **start state**
+. stem:[F \subseteq Q] is the set of **accept states**
+
+In contrast with DFAs, stem:[\epsilon]-moves are allowed in two forms: 
+
+* stem:[\epsilon]-input-moves corresponding to stem:[\delta(q, \epsilon, x)]
+* stem:[\epsilon]-stack-moves corresponding to stem:[\delta(q, x, \epsilon)]
+
+DPDAs reject a string in the following cases:
+
+* whole input is read but no accept state is reached
+* failure to read a string
+    - pop an empty stack (hanging)
+    - endless stem:[\epsilon]-moves (looping) without reading input past a point
+
+
+_Deterministic context-free grammars_ (DCFGs) are equivalent to DPDAs if the language is 
+*endmarked* (all strings are terminated with a special character e.g. stem:[\dashv] ).
+
+
+
+
+
+
+
 
 
 
