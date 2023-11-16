@@ -182,7 +182,9 @@ latexmath:[s] may be divided into three pieces latexmath:[s = xyz] satisfying th
 * If a language is proved to not respect the pumping lemma, then it is not regular
 * latexmath:[|s|] represents the length of string latexmath:[s]
 
-...TODO 
+...TODO examples, proof
+
+== Grammar Techniques
 
 == Context-Free Languages
 

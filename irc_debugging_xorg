@@ -1,0 +1,112 @@
+* Now talking on #bspwm
+* Topic for #bspwm is: A tiling window manager based on binary space partitioning | GitHub: https://github.com/baskerville/bspwm | Reddit: https://www.reddit.com/r/bspwm/ | Tutorial: https://github.com/windelicato/dotfiles/wiki/bspwm-for-dummies
+* Topic for #bspwm set by sdk (Thu May 20 18:51:14 2021)
+* dabg has quit (Quit: Leaving)
+* jaykelly450 has quit (Ping timeout: 264 seconds)
+<emanuele6> klim: it is not a receptacle, how would one even create a receptacle by mistake?
+<emanuele6> many people have reported this issue; the windows of some programs sometimes don't get deleted from the tree after they get close
+<emanuele6> it only happened to me once, i don't remember how i was able to reproduce it
+<emanuele6> when it happened to me, i used the reproducer to write a patch that lets you at least   node -k   those bugged nodes to remove them. but i didn't have enough time to figure out how to make the problem not happen at all
+<emanuele6> and the next time i tried working on this, i was not able to reproduce the bug anymore
+<emanuele6> :/
+<dabg_> it happens even if programs are still running. Just by switching between desktops windows disappear
+<emanuele6> may i see    bspc wm -d  ?
+<emanuele6> shown:false is completely normal. that only represents that the window is not visible according to how bspwm logically wants to display them
+<emanuele6> those invisible windows iirc look like a client with null className and instanceName
+* waleee (~waleee@h-176-10-144-38.na.cust.bahnhof.se) has joined
+* pepepe_2004 has quit (Quit: Hasta la siega!!)
+* moviuro has quit (Quit: Reboot? Or did my jail(8) just die?)
+* moviuro (~moviuro@znc.popho.be) has joined
+<dabg_> emanuele6: as soon as the bug appears again I'm gonna send the output of bspc wm...Ironically, it has stopped from happening
+* jb1277976 (joeb@user/jb1277976) has joined
+<jb1277976> I'm looking for a wm again and I had so much fun with bspwm last time. Kde and cinnamon or to desktopie 
+<emanuele6> 6 minutes ago
+<jb1277976> Do I need polybar ? I just want date time etc..
+<emanuele6> not necessarily
+<dabg_> https://pastebin.com/m18Kz5Ph the output from bspc wm
+<dabg_> I understood what 'shown' is for...In that paste I had focus on desktop 2, one of those 2 children were not visible. Neither was the only client in desktop 3 
+<dabg_> Anyway I'm not noticing anything relevant
+<emanuele6> why is the stacking list missing?
+<dabg_> oops sorry I left out text from history and below 
+<emanuele6> anyway, if those alacritty windows are not visible to you, it probably just means that alacritty is lagging, or it is not being redraw after being shown
+<dabg_> "stackingList": [
+<dabg_>         18874370,
+<dabg_>         29360130,
+<dabg_>         10485780,
+<dabg_>         39845890
+<dabg_> ]
+<emanuele6> do you have a compositor?
+<dabg_> yep I use picom
+<emanuele6> with v-sync?
+* eletrotupi has quit (Remote host closed the connection)
+* eletrotupi (eletrotupi@user/eletrotupi) has joined
+<emanuele6> anyway, i don't understand the problem you are having; you have two alacritty windows in desktop 2 and you don't see them anymore, right? do you see borders? have you tried resizing them?
+<emanuele6> what happens if you open another window?
+<dabg_> ok so for the v-sync question I have to read the manual of picom since I don't know which is the default behaviour
+<dabg_> Then, resizing doesn't work. I need to prepare a test for borders since I have no borders in current configuration
+<emanuele6> just run     bspc config border_width 3   and see if the appear
+<dabg_> If I open another window It gets laid out as it should, the screen is split etc..anyway the portion of screen occupied by the previous invisible window remains an empty space
+* eletrotupi has quit (Remote host closed the connection)
+* eletrotupi (eletrotupi@user/eletrotupi) has joined
+<dabg_> ok borders work!
+<emanuele6> and resizing them does nothing?
+<emanuele6> well, you have the ids of those windows from the wm dump, can run   xprop -id 18874370   does that fail? if it does not fail what is the value of _NET_WM_PID? does that pid exist? if you use   top -p thatpid    what is it doing?
+* eletrotupi has quit (Remote host closed the connection)
+* eletrotupi (eletrotupi@user/eletrotupi) has joined
+<dabg_> bad rendering problems..while growing, the border moves but it gets rendered on top of the other window. It's likely I need to investigate the compositor
+<dabg_> the pid exists but the process is sleeping 
+<emanuele6> if the border remains rendered that 100% means that you are not experiencing the issue you linked earlier
+<emanuele6> that just means that alacritty is lagging (or it is somehow stuck waiting for something or otherwise deadlocked, since you said it is sleeping) and not rendering the window
+<emanuele6> if you strace that pid, what is it doing?
+<emanuele6> strace -p thatpid     if you are not on a debian-based linux, you may need to either run strace as root (or run   sudo sysctl kernel.yama.ptrace_scope=0  and then set it back to 2 when you are done stracing)
+<emanuele6> if it's stuck doing something you should see something like      read(0,          or    poll(something, something,    on the last line
+<dabg_> it says poll
+<emanuele6> what exactly though?
+<dabg_> fd=3 events=POLLIN
+<emanuele6>    ls -ld /proc/writethatpidhere/fd/3    what does that say?
+<dabg_> links to socket:[94653]
+<emanuele6> oh, so like an alacritty deamon?
+<dabg_> anyway alacritty is a terminal, it may be right that it is sleeping since no command is being executed?
+<emanuele6> it is not right that it does not send its draw information on request to X while it is not doing anything.
+<emanuele6> if you change desktop and go back to it, does anything happen on the strace?
+<dabg_> yes, even if I drag my mouse
+<emanuele6> ok, so that is fine
+<emanuele6> you said it is not stuck sleeping
+<emanuele6> err
+<emanuele6> * so it is not stuck sleeping
+<emanuele6> oh, wait, but that is a daemon
+<dabg_> I guess it's the compositor getting in the way as well, rendering works so badly
+<emanuele6> so you have other alacritty terminals running other than those two bugged ones, right?
+<dabg_> yes
+<emanuele6> close those terminals and use another terminal to run the strace
+<emanuele6> or strace will show the work alacritty is doing to render the output of strace
+<emanuele6> s/another terminal/another program (e.g. xterm)/
+<dabg_> strace still the same
+<emanuele6> hmm, so maybe it is not a deamon, that socket is just the connection from the single window alacritty process to Xorg
+<emanuele6> what happens if you do    xdo hide 18874370; xdo show 18874370
+<dabg_> yeah it is not a daemon
+<emanuele6> if you don't have  xdo     xdotool windowunmap 18874370; xdotool windowmap 18874370   also works
+<dabg_> the window does not appear
+<emanuele6> well, anyway, those alacritty somehow got stuck
+<emanuele6> what were they running?
+<dabg_> just a shell, there were no long-running commands
+<emanuele6> do you know if those shells are still running?
+<dabg_> yes it still running on the instance i left alive
+<dabg_> that one was running vim actually, even vim still run
+<emanuele6> so, vim, that is a long-running program that is not a shell :)
+<dabg_> I forgot :(
+<dabg_> those instances running shells had the same behaviour
+<emanuele6> yes, it is probably something buggy in alacritty, and likely has to do with its handling of Xorg requests it received, not the command it is running
+<dabg_> anyway thanks for your time, if you don't need any more results from commands I'm gonna close everything and make some attempts with the compositor
+<dabg_> way back I changed back-end to solve some issues, I'm gonna see if rendering is affected somehow
+<emanuele6> at most it could, be that bspwm send it some weird combination of X requests that alacritty is not used to seeing in other window managers, and it got confused. but as you are describing the problem, bspwm is 
+<emanuele6> managing the window correctly, it is just the window that is not rendering itself
+<dabg_> Ok thank you for the input
+<emanuele6> no problem
+<jb1277976> I installed bspwm by my package manager I forgot the default keys
+<jb1277976> My kde login screen is burned in lol or maybe I should just use Xfinity ?
+<jb1277976> Xinit*
+* eletrotupi has quit (Remote host closed the connection)
+* eletrotupi (eletrotupi@user/eletrotupi) has joined
+* eletrotupi has quit (Remote host closed the connection)
+* eletrotupi (eletrotupi@user/eletrotupi) has joined

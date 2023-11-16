@@ -1,0 +1,32 @@
+= Booting Process 
+
+== Stage 1: Bios
+Power-on event initializes the program counter of CPU. +
+The _BIOS_ residing on the read only memory (ROM) is executed from the particular 
+memory address in program counter. +
+
+Tasks::
+. https://en.wikipedia.org/wiki/Power-on_self-test[POST (Power-on self-test)] 
+. Initial code execution
+
+Typically, the first few sectors of the first found selected device (hard disk, floppy disk, 
+CD-ROM, …) are loaded to the memory and this initial code is executed.
+The _initial code_ can be:
+
+* The bootloader code
+* The kernel code of the stepping stone OS such as FreeDOS
+* The kernel code of the target OS if it fits in this small space 
+
+== Stage 2: Bootloader
+
+The _bootloader_ loads the system kernel image and the initrd image to the memory and 
+hands control over to them. +
+The _initrd_ image is the root filesystem image and its support 
+depends on the bootloader used.
+
+NOTE: The initrd image for the 2.6 Linux kernel is technically the _initramfs_ 
+(initial RAM filesystem) image. +
+The _initramfs_ image is a gzipped cpio archive of files in the root filesystem.
+
+
+

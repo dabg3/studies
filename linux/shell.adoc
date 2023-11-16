@@ -1,0 +1,25 @@
+== sed
+
+*sed* is a non-interactive stream editor.
+
+By default sed *prints all processed input to standard output* (except input that has been 
+modified/deleted by commands such as `d`). 
+
+* `-n` to suppress output
+* `-i` to edit files in-place instead of printing to standard output
+* `p` command to print specific lines
+[source,sh]
+----
+# prints only line 45 of the input file
+sed -n ’45p’ file.txt
+----
+See also the `W` and `s///w` commands for writing output to other files.
+
+A _sed program_ consists of one or more sed commands, passed in by one or more of the `-e`,
+`-f`, `--expression`, and `--file` options, or the first non-option argument if zero of these
+options are used
+
+sed commands follow this syntax: `[addr]X[options]`
+
+* `[addr]` can be a single line number, a regular expression, or a range of lines. 
+* `X` is a single letter sed command executed on all lines matched by `[addr]`

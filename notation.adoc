@@ -1,0 +1,4 @@
+= Symbols
+:stem: latexmath
+
+* &#8696; : partial function

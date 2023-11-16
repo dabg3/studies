@@ -1,0 +1,10 @@
+= Math Fundamentals
+:stem: latexmath
+
+Definition of basic mathematical __objects, tools and notation__.
+
+== Sets
+A **set** is a collection of **elements** (or members) represented as a unit.
+
+Descriptions::
+    * stem:[S = \{1, 7, 23\}]
